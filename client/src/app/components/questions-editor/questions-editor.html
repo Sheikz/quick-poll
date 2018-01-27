@@ -1,0 +1,10 @@
+<div *ngFor="let question of poll.questions">
+    Question: <input type="text" [(ngModel)]="question.question">
+    <label><input type="checkbox" [(ngModel)]="question.multiple"> Multiple?</label>
+    <div *ngFor="let answer of question.answers">
+        Answer: <input type="text" [(ngModel)]="answer.answer">
+    </div>
+    <button (click)="addAnswer(question)">Add answer</button>
+</div>
+<button (click)="addQuestion()">Add Question</button>
+<button (click)="save()">Save</button>

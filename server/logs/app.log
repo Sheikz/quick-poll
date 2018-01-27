@@ -1,0 +1,11 @@
+2018-1-27 18:13:28 - info: Winston logger initialized!
+2018-1-27 18:13:28 - info: Server is listening on port 3000
+2018-1-27 18:24:20 - info: Winston logger initialized!
+2018-1-27 18:24:20 - info: Server is listening on port 3000
+2018-1-27 18:24:40 - info: Winston logger initialized!
+2018-1-27 18:24:40 - info: Server is listening on port 3000
+2018-1-27 18:24:41 - info: got poll
+2018-1-27 18:25:20 - info: Winston logger initialized!
+2018-1-27 18:25:20 - info: Server is listening on port 3000
+2018-1-27 18:25:21 - info: got poll questions=[question=, answers=[answer=], multiple=false]
+2018-1-27 18:27:21 - info: got poll questions=[question=, answers=[answer=], multiple=false]
