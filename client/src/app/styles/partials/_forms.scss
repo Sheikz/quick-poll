@@ -1,0 +1,9 @@
+input{
+    background-color: transparent;
+    border: none;
+    box-shadow: none;
+    border-bottom: 1px solid $primary;
+    outline: none;
+    color: $primary;
+    @include font-medium;
+}

@@ -1,0 +1,12 @@
+<div>Vote page</div>
+<div *ngIf="poll">
+    <div *ngIf="poll.status.state === 'NOT_STARTED'">The poll is not started yet</div>
+
+    <div *ngIf="question && poll.status.state === 'STARTED'">
+        <div>question: {{question.question}}</div>
+        <div *ngFor="let answer of question.answers; let i = index">
+            <div>{{answer.answer}}</div>
+            <div class="button" (click)="vote(i)">Vote for this one</div>
+        </div>
+    </div>
+</div>

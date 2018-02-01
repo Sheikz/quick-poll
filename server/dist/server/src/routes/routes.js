@@ -1,112 +1,95 @@
-import * as express from 'express';
-import { Logger } from '../logger/logger';
-import { getPoll, setPollStep, addPollVote, createPoll } from '../services/poll/poll';
-import { generateLinks, decrypt, getTokenInfo } from '../services/auth/auth';
-import * as _ from 'lodash';
-import { publish, sendUpdateNotification } from '../services/notifications/notifications';
-
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const logger_1 = require("../logger/logger");
+const poll_1 = require("../services/poll/poll");
+const auth_1 = require("../services/auth/auth");
+const notifications_1 = require("../services/notifications/notifications");
 const success = {
     message: 'OK'
-}
-
-export function initRoutes(app: express.Express){
-
+};
+function initRoutes(app) {
     app.post('/api/poll', (req, res) => {
-
         try {
-            let poll = createPoll(req.body);
+            let poll = poll_1.createPoll(req.body);
             res.json(poll);
         }
-        catch(err){
-            Logger.error('Error while creating poll', err);
+        catch (err) {
+            logger_1.Logger.error('Error while creating poll', err);
             res.status(500).json(err);
         }
     });
-
     app.get('/api/poll/:token', identifyToken, (req, res) => {
-
         try {
             let tokenInfo = res.locals.tokenInfo;
             let token = tokenInfo.token;
             if (!tokenInfo)
                 res.status(404).send();
-
-            let poll = getPoll(tokenInfo.id);
-
+            let poll = poll_1.getPoll(tokenInfo.id);
             // Do not send results to voters
-            if (tokenInfo.type === 'vote'){
-                poll.questions.forEach(q => q.answers.forEach(a => a.votes = 0))
+            if (tokenInfo.type === 'vote') {
+                poll.questions.forEach(q => q.answers.forEach(a => a.votes = 0));
                 delete poll.links;
             }
-
             res.json(poll);
         }
-        catch(err){
-            Logger.error('error while getting poll', err);
+        catch (err) {
+            logger_1.Logger.error('error while getting poll', err);
             res.status(500).json(err);
         }
-    })
-
+    });
     app.post('/api/admin/set', identifyToken, (req, res) => {
-        try{
+        try {
             let tokenInfo = res.locals.tokenInfo;
             let token = tokenInfo.token;
             if (!tokenInfo || tokenInfo.type !== 'admin')
                 res.status(404).send();
-
-            let poll = setPollStep(tokenInfo.id, req.body['step'])
-
-            sendUpdateNotification(tokenInfo.id, token);
+            let poll = poll_1.setPollStep(tokenInfo.id, req.body['step']);
+            notifications_1.sendUpdateNotification(tokenInfo.id, token);
             res.status(200).json(poll);
         }
-        catch (err){
-            Logger.error('error while setting poll step', err);
+        catch (err) {
+            logger_1.Logger.error('error while setting poll step', err);
             res.status(500).json(err);
         }
-    })
-
+    });
     app.post('api/admin/reset', identifyToken, (req, res) => {
-        try{
+        try {
             let tokenInfo = res.locals.tokenInfo;
             let token = tokenInfo.token;
             if (!tokenInfo || tokenInfo.type !== 'admin')
                 res.status(404).send();
-
-            let poll = setPollStep(tokenInfo.id, req.body['step'])
-
-            sendUpdateNotification(tokenInfo.id, token);
+            let poll = poll_1.setPollStep(tokenInfo.id, req.body['step']);
+            notifications_1.sendUpdateNotification(tokenInfo.id, token);
             res.status(200).json(poll);
         }
-        catch (err){
-            Logger.error('error while setting poll step', err);
+        catch (err) {
+            logger_1.Logger.error('error while setting poll step', err);
             res.status(500).json(err);
         }
-    })
-
+    });
     app.post('/api/vote', identifyToken, (req, res) => {
         try {
             let tokenInfo = res.locals.tokenInfo;
             let token = tokenInfo.token;
             if (!tokenInfo || tokenInfo.type !== 'vote')
                 res.status(404).send();
-
-            addPollVote(tokenInfo.id, req.body['questionId'], req.body['answers'])
-            sendUpdateNotification(tokenInfo.id, token);
+            poll_1.addPollVote(tokenInfo.id, req.body['questionId'], req.body['answers']);
+            notifications_1.sendUpdateNotification(tokenInfo.id, token);
             res.status(200).json(success);
         }
-        catch(err){
-            Logger.error('error while posting vote', err);
+        catch (err) {
+            logger_1.Logger.error('error while posting vote', err);
             res.status(500).json(err);
         }
     });
 }
-
-function identifyToken(req, res: express.Response, next){
+exports.initRoutes = initRoutes;
+function identifyToken(req, res, next) {
     let token = req.body['token'] || req.params['token'];
-    if (!token){
+    if (!token) {
         res.status(404).json('Missing token');
     }
-    let t = getTokenInfo(token);
+    let t = auth_1.getTokenInfo(token);
     res.locals.tokenInfo = t;
     next();
 }

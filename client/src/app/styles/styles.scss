@@ -1,0 +1,14 @@
+/* You can add global styles to this file, and also import other style files */
+
+@import 'variables';
+@import './partials/forms';
+@import './partials/buttons';
+
+body{
+    background-color: black;
+    color: $primary;
+    padding: 80px;
+    font-family: 'Noto Sans', sans-serif;
+
+    font-size: 26px;
+}

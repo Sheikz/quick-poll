@@ -1,0 +1,7 @@
+@import '~app/styles/variables';
+
+.results__bar{
+    height: 40px;
+    background-color: $primary;
+    transition: width 2s;
+}

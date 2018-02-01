@@ -1,5 +1,20 @@
 export interface IPoll{
-    questions: IQuestion[]
+    questions: IQuestion[],
+    links?: IPollLinks,
+    status?: IPollStatus,
+    id?: number
+}
+
+export interface IPollStatus{
+    state: 'NOT_STARTED' | 'STARTED' | 'FINISHED',
+    step: number
+}
+
+
+export interface IPollLinks {
+    vote: string,
+    results: string,
+    admin: string
 }
 
 export interface IQuestion{
@@ -10,4 +25,5 @@ export interface IQuestion{
 
 export interface IAnswer{
     answer: string,
+    votes: number
 }

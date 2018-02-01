@@ -1,0 +1,17 @@
+.button{
+    background-color: $primary;
+    padding: 5px 10px;
+    margin-top: 5px;
+    display: inline-block;
+    color: $secondary;
+    cursor: pointer;
+    border: 1px solid;
+    transition: 0.2s all;
+    border-radius: 3px;
+
+    &:hover{
+        background-color: $secondary;
+        color: $primary;
+        border-color: $primary;
+    }
+}

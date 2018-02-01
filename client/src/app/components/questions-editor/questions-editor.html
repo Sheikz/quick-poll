@@ -1,10 +1,17 @@
 <div *ngFor="let question of poll.questions">
-    Question: <input type="text" [(ngModel)]="question.question">
-    <label><input type="checkbox" [(ngModel)]="question.multiple"> Multiple?</label>
+        <app-checkbox [(ngModel)]="question.multiple">Multiple?</app-checkbox>
+    <div>Type your question</div>
+    <input type="text" [(ngModel)]="question.question">
+    <div> Multiple?</div>
+    <div>Answers</div>
     <div *ngFor="let answer of question.answers">
-        Answer: <input type="text" [(ngModel)]="answer.answer">
+    <input type="text" [(ngModel)]="answer.answer">
     </div>
-    <button (click)="addAnswer(question)">Add answer</button>
+    <div class="button" (click)="addAnswer(question)">Add answer</div>
 </div>
-<button (click)="addQuestion()">Add Question</button>
-<button (click)="save()">Save</button>
+<div class="button" (click)="addQuestion()"><i class="fa fa-plus" aria-hidden="true"></i>Add question</div>
+<div class="button" (click)="save()">Save</div>
+<i class="fa fa-plus" aria-hidden="true"></i>
+<a *ngIf="poll.links" href="{{poll.links.vote}}">Vote link</a>
+<a *ngIf="poll.links" href="{{poll.links.admin}}">Admin link</a>
+<a *ngIf="poll.links" href="{{poll.links.results}}">Results link</a>

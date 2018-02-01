@@ -1,0 +1,26 @@
+@import '~app/styles/variables';
+
+.checkbox__container{
+
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    user-select: none;
+    
+
+    .checkbox{
+        width: 20px;
+        height: 20px;
+        border: 1px solid $primary;
+        transition: 0.4s all;
+
+        &.enabled{
+            background-color: $primary;
+            
+        }
+
+        &__label{
+            margin-left: 5px;
+        }
+    }
+}

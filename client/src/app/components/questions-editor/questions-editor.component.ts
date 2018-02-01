@@ -1,10 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-import { IQuestion, IAnswer, IPoll } from '../../../../../shared/models/poll';
+import { IQuestion, IAnswer, IPoll, IPollStatus } from '../../../../../shared/models/poll';
 import * as _ from 'lodash';
 import { PollService } from '../../services/poll.service';
 
 const defaultAnswer: IAnswer = {
-    answer: ''
+    answer: '',
+    votes: 0
 };
 
 const defaultQuestion: IQuestion = {
@@ -39,6 +40,8 @@ export class QuestionsEditorComponent implements OnInit {
 
     save() {
         console.log('save', this.poll);
-        this.pollService.postPoll(this.poll);
+        this.pollService.postPoll(this.poll).subscribe(response => {
+            this.poll = response;
+        });
     }
 }
