@@ -1,0 +1,16 @@
+{
+    "logging":{
+        "level": "info",
+        "dir": "logs"
+    },
+    "db": "",
+    "crypto":{
+        "password": ""
+    },
+    "appUrl": "http://localhost:4200",
+    "pubnub":{
+        "publishKey": "",
+        "subscribeKey": "",
+        "secretKey": ""
+    }
+}

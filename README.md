@@ -1,1 +1,1 @@
-quick-poll
+An application to easily create beautiful live polls and quizzes

@@ -6,7 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc",
-    "watch": "concurrently \"tsc -w\" \"nodemon dist/server/src/server.js\""
+    "watch": "concurrently \"tsc -w\" \"nodemon dist/server/src/server.js\"",
+    "start": "node dist/server/src/server.js"
   },
   "keywords": [],
   "author": "",
@@ -19,13 +20,14 @@
     "lodash": "^4.17.4",
     "mysql": "^2.15.0",
     "node-cache": "^4.1.1",
-    "pubnub": "^4.20.0"
+    "pubnub": "^4.20.0",
+    "typescript": "~2.6.2",
+    "winston": "^2.4.0"
   },
   "devDependencies": {
     "@types/lodash": "^4.14.97",
     "@types/mysql": "^2.15.2",
     "@types/pubnub": "^4.0.2",
-    "@types/winston": "^2.3.7",
-    "winston": "^2.4.0"
+    "@types/winston": "^2.3.7"
   }
 }

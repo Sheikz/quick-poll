@@ -11,6 +11,7 @@ import { VotePageComponent } from './pages/vote/vote.page';
 import { ResultsPageComponent } from './pages/results/results.page';
 import { PubNubAngular } from 'pubnub-angular2';
 import { CheckboxComponent } from './components/checkbox/checkbox.component';
+import { ToLetter } from './pipes/to-letter.pipe';
 
 const components = [
   QuestionsEditorComponent,
@@ -27,7 +28,8 @@ const pages = [
   declarations: [
     AppComponent,
     components,
-    pages
+    pages,
+    ToLetter
   ],
   imports: [
     BrowserModule,

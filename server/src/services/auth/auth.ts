@@ -3,15 +3,15 @@ import { config } from '../../config/config';
 import { Logger } from '../../logger/logger';
 import * as _ from 'lodash';
 
-const algorithm = 'aes192'
-const linkUrlBase = config.appUrl
-const password = config.crypto.password
+const algorithm = 'des-ede3-cbc'
+const linkUrlBase = process.env.appUrl || config.appUrl;
+const password = process.env.password || config.crypto.password;
 
 export function generateLinks(id){
     return {
-        vote: `${linkUrlBase}/vote/${encrypt(`vote-${id}`)}`,
-        results: `${linkUrlBase}/results/${encrypt(`results-${id}`)}`,
-        admin: `${linkUrlBase}/admin/${encrypt(`admin-${id}`)}`,
+        vote: `${linkUrlBase}/vote/${encrypt(`v-${id}`)}`,
+        results: `${linkUrlBase}/results/${encrypt(`r-${id}`)}`,
+        admin: `${linkUrlBase}/admin/${encrypt(`a-${id}`)}`,
     };
 }
 
@@ -37,7 +37,7 @@ export function getTokenInfo(token){
     let d = decrypt(token);
 
     const values = d.split('-');
-    if (values.length !== 2 || !['admin', 'results', 'vote'].some(v => v === values[0]))
+    if (values.length !== 2 || !['v', 'r', 'a'].some(v => v === values[0]))
         return null;
 
     return {

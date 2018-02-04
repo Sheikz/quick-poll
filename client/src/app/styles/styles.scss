@@ -1,14 +1,26 @@
 /* You can add global styles to this file, and also import other style files */
 
 @import 'variables';
+
 @import './partials/forms';
 @import './partials/buttons';
+@import './partials/animations';
+
+@import './components/voters-count';
 
 body{
     background-color: black;
     color: $primary;
-    padding: 80px;
+    padding: 5% 7%;
     font-family: 'Noto Sans', sans-serif;
-
     font-size: 26px;
+}
+
+a{
+    color: $primary;
+    text-decoration: none;
+
+    &:hover{
+        color: $third;
+    }
 }

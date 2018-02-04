@@ -6,7 +6,14 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "server": "cd server && npm run watch",
-    "app": "cd client && npm start"
+    "app": "cd client && npm start",
+    "start": "cd server && npm start",
+    "build-server": "cd server && npm run build",
+    "build-app": "cd client && npm run build",
+    "install": "npm run install-client && npm run install-server",
+    "install-client": "cd client && npm install",
+    "install-server": "cd server && npm install",
+    "postinstall": "npm run build-app && npm run build-server"
   },
   "keywords": [],
   "author": "",

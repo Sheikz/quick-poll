@@ -1,0 +1,77 @@
+@import '~app/styles/variables';
+
+.links{
+    margin-top: $gutter*2;
+
+    .fa-clipboard{
+        margin-left: 5px;
+        cursor: pointer;
+        
+        &:hover{
+            color: $third;
+        }
+    }
+
+    & > * > *{
+        display: inline-block;;
+    }
+}
+
+.answers{
+    margin-top: $gutter/2;
+}
+
+.question{
+
+    border: 1px solid $primary;
+    padding: $gutter;
+
+    &:not(:first-child){
+        margin-top: $gutter;
+    }
+
+    &__add-answer{
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-top: $gutter/2;
+
+        & > *:not(:first-child){
+            margin-left: 10px;
+        }   
+    }
+
+    &__buttons{
+        margin-top: $gutter/2;
+        display: flex;
+        justify-content: space-between;
+    }
+}
+
+.link{
+    border: 1px solid $primary;
+    padding: 5px 10px;
+
+    .button{
+        min-width: 100px;
+    }
+}
+
+.answer{
+
+    span{
+        visibility: hidden;
+        cursor: pointer;
+        margin-left: 5px;
+
+        &:hover{
+            color: $third;
+        }
+    }
+
+    &:hover{
+        span{
+            visibility: visible;
+        }
+    }
+}

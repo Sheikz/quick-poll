@@ -6,14 +6,14 @@ import { getPoll } from '../poll/poll';
 import { generateId } from '../auth/auth';
 
 const pub = new pubnub({
-    subscribeKey: config.pubnub.subscribeKey,
-    publishKey: config.pubnub.publishKey,
-    secretKey: config.pubnub.secretKey
+    subscribeKey: process.env.subscribeKey || config.pubnub.subscribeKey,
+    publishKey: process.env.publishKey || config.pubnub.publishKey,
+    secretKey: process.env.secretKey || config.pubnub.secretKey
 })
 
 export function publish(message, channel){
 
-    pub.publish({
+    return pub.publish({
         message: message,
         channel: channel,
     }).then(response => {
@@ -23,13 +23,23 @@ export function publish(message, channel){
     });
 }
 
-export function sendUpdateNotification(id, token){
-    let poll = getPoll(id);
+export async function sendUpdateNotification(id, token){
+    let poll = await getPoll(id);
 
-    Logger.info('sending update for poll: '+id);
+    Logger.info('sending poll update to admins', poll);
     publish({
         event: 'POLL_UPDATED',
         poll: poll
-    }, ''+poll.id);
+    }, poll.id + 'a');
+
+    poll.questions.forEach(q => {
+        q.answers.forEach(a => a.votes = 0);
+    })
+
+    Logger.info('sending poll update to voters', poll);
+    return publish({
+        event: 'POLL_UPDATED',
+        poll: poll
+    }, poll.id + 'v');
 
 }

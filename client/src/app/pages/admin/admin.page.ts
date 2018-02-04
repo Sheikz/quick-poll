@@ -6,7 +6,8 @@ import { PubNubAngular } from 'pubnub-angular2';
 
 @Component({
     selector: 'app-admin',
-    templateUrl: './admin.html'
+    templateUrl: './admin.html',
+    styleUrls: [ './admin.scss']
 })
 export class AdminPageComponent extends HasPoll {
 
@@ -29,5 +30,33 @@ export class AdminPageComponent extends HasPoll {
         });
     }
 
+    previous() {
+        this.pollService.set(this.token, this.poll.status.step - 1).subscribe(n => {
+            console.log('nexted', n);
+        });
+    }
+
+    hasNext() {
+        return this.currentStep < this.poll.questions.length - 1;
+    }
+
+    hasPrevious() {
+        return this.currentStep > 0;
+    }
+
+    shouldUpdate(event) {
+        return !!event.channel.match(/.*a$/);
+    }
+
+    getChannels() {
+        return [{
+            name: this.poll.id + 'a',
+            presence: false
+        },
+        {
+            name: this.poll.id + 'v',
+            presence: true
+        }];
+    }
 
 }

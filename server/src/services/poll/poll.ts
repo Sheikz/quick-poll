@@ -10,23 +10,22 @@ const livePolls: {
     [key: number]: IPoll
 } = {};
 
-let id = 0;
-
 const cache: NodeCache.NodeCache = new NodeCache({
     stdTTL: 1000 * 60 * 24
 });
 
-export function createPoll(poll: IPoll){
+export async function createPoll(poll: IPoll){
 
-    let currentId = id++;
-    poll.id = currentId;
-    poll.links = generateLinks(currentId)
+    let con = await Connection.get();
     poll.status = {
         state: 'NOT_STARTED',
         step: 0
     };
-    cache.set(currentId, poll);
-    return poll;
+    let result = <any>await con.query('insert into poll (poll) values (?)', JSON.stringify(poll));
+    
+    con.release();
+    
+    return await getPoll(result.insertId);
 }
 
 function savePoll(poll: IPoll){
@@ -34,18 +33,33 @@ function savePoll(poll: IPoll){
     return poll;
 }
 
-export function getPoll(id: number) {
+export async function getPoll(id: number): Promise<IPoll> {
+    let poll = cache.get<IPoll>(id);
+    if (poll){
+        return poll;
+    }
+    // If not in cache, get from DB
+    let con = await Connection.get();
+    let pollJSON = await con.query('select poll from poll where id = ?', id);
+    if (pollJSON.length == 0)
+        return null;
 
-    return cache.get<IPoll>(id);
+    poll = JSON.parse(pollJSON[0].poll);
+
+    poll.id = id;
+    poll.links = generateLinks(poll.id);
+    con.release();
+    cache.set(id, poll);
+    return poll;
 }
 
 export function resetResults(id, step){
     
 }
 
-export function setPollStep(id, step){
+export async function setPollStep(id, step){
 
-    let poll = cache.get<IPoll>(id);
+    let poll = await getPoll(id);
     if (step == 0){
         resetPoll(poll);
     } 
@@ -60,16 +74,16 @@ function resetPoll(poll: IPoll){
     poll.questions.forEach(q => q.answers.forEach(a => a.votes = 0));
 }
 
-export function endPoll(id){
-    let poll = cache.get<IPoll>(id);
+export async function endPoll(id){
+    let poll = await getPoll(id);
     poll.status.step = 0;
     poll.status.state = 'FINISHED';
     return savePoll(poll);
 }
 
-export function addPollVote(pollId: number, questionId: number, answers: number[]){
+export async function addPollVote(pollId: number, questionId: number, answers: number[]){
 
-    let poll = cache.get<IPoll>(pollId);
+    let poll = await getPoll(pollId);
 
     answers.forEach(a => {
         poll.questions[questionId].answers[a].votes = poll.questions[questionId].answers[a].votes + 1;

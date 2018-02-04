@@ -4,7 +4,7 @@ import {config} from '../config/config';
 
 const tsFormat = () => (new Date()).toLocaleString();
 const today = () => (new Date()).getDate();
-const logDir = config.logging.dir;
+const logDir = process.env.loggingDir || config.logging.dir;
 
 try {
     if (!fs.existsSync(logDir)) {
@@ -30,6 +30,6 @@ export const Logger = new (winston.Logger)({
     ]
 });
 
-Logger.level = config.logging.level;
+Logger.level = process.env.loggingLevel || config.logging.level;
 
 Logger.info('Winston logger initialized!');

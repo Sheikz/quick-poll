@@ -1,14 +1,22 @@
 <div *ngIf="poll">
+    <div class="voters-count">
+        <i class="fas fa-users"></i> {{votersCount}}
+    </div>
 
-    <div *ngIf="poll.status.state === 'NOT_STARTED'">The poll is not started yet</div>
+    <div *ngIf="poll.status.state === 'NOT_STARTED'">
+        <div class="vote__waiting">
+            <div>Waiting for the organizer to start...</div>
+            <div class="vote__waiting--spinner"><i class="fas fa-sync fa-spin "></i></div>
+        </div>
+    </div>
 
-    <div *ngIf="question && poll.status.state === 'STARTED'">
-        <div>{{question.question}}</div>
-        <div>Total votes: {{totalVotes}}</div>
-        <div *ngFor="let answer of question.answers; let i = index">
-            <div>{{answer.answer}}</div>
-            <div>Count: {{answer.votes}}</div>
-            <div [style.width]="answer.width" class="results__bar"></div>
+    <div *ngIf="currentQuestion && poll.status.state === 'STARTED'">
+        
+        <div class="question">{{currentQuestion.question}}</div>
+        <div class="answer" *ngFor="let answer of currentQuestion.answers; let i = index">
+            <div class="answer__answer">{{answer.answer}}</div>
+            <div class="answer__bar--wrapper"><div class="answer__bar" [style.width]="answer.width"></div></div>
+            <div class="answer__count"> {{answer.votes}}</div>
         </div>
     </div>
 </div>

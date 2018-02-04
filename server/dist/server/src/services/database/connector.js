@@ -11,11 +11,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const mysql = require("mysql");
 const logger_1 = require("../../logger/logger");
 const config_1 = require("./../../config/config");
-const pool = mysql.createPool(config_1.config.db);
+const dbUrl = process.env.CLEARDB_DATABASE_URL || config_1.config.db;
+const pool = mysql.createPool(dbUrl);
 pool.config.connectionLimit = 1000;
-pool.on('connection', () => logger_1.Logger.info('new connection'));
-pool.on('release', () => logger_1.Logger.info('connection released', { active: pool._allConnections.length, free: pool._freeConnections.length }));
-pool.on('acquire', () => logger_1.Logger.info('connection acquired', { active: pool._allConnections.length, free: pool._freeConnections.length }));
 class Connection {
     constructor(connection) {
         this.connection = connection;

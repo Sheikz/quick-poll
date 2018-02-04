@@ -2,14 +2,14 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const crypto = require("crypto");
 const config_1 = require("../../config/config");
-const algorithm = 'aes192';
-const linkUrlBase = config_1.config.appUrl;
-const password = config_1.config.crypto.password;
+const algorithm = 'des-ede3-cbc';
+const linkUrlBase = process.env.appUrl || config_1.config.appUrl;
+const password = process.env.password || config_1.config.crypto.password;
 function generateLinks(id) {
     return {
-        vote: `${linkUrlBase}/vote/${encrypt(`vote-${id}`)}`,
-        results: `${linkUrlBase}/results/${encrypt(`results-${id}`)}`,
-        admin: `${linkUrlBase}/admin/${encrypt(`admin-${id}`)}`,
+        vote: `${linkUrlBase}/vote/${encrypt(`v-${id}`)}`,
+        results: `${linkUrlBase}/results/${encrypt(`r-${id}`)}`,
+        admin: `${linkUrlBase}/admin/${encrypt(`a-${id}`)}`,
     };
 }
 exports.generateLinks = generateLinks;
@@ -33,7 +33,7 @@ exports.decrypt = decrypt;
 function getTokenInfo(token) {
     let d = decrypt(token);
     const values = d.split('-');
-    if (values.length !== 2 || !['admin', 'results', 'vote'].some(v => v === values[0]))
+    if (values.length !== 2 || !['v', 'r', 'a'].some(v => v === values[0]))
         return null;
     return {
         type: values[0],

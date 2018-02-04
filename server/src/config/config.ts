@@ -8,4 +8,6 @@ const configFile = "./config/configuration.json";
 /**
  * Loads the configuration
  */
-export const config: any = JSON.parse(fs.readFileSync(configFile, "utf8"));
+
+export const config: any = (process.env.NODE_ENV === 'production') ? 
+    {} : JSON.parse(fs.readFileSync(configFile, "utf8"));

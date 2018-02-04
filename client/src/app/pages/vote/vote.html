@@ -1,12 +1,30 @@
-<div>Vote page</div>
-<div *ngIf="poll">
-    <div *ngIf="poll.status.state === 'NOT_STARTED'">The poll is not started yet</div>
+<div class="vote" *ngIf="poll">
 
-    <div *ngIf="question && poll.status.state === 'STARTED'">
-        <div>question: {{question.question}}</div>
-        <div *ngFor="let answer of question.answers; let i = index">
-            <div>{{answer.answer}}</div>
-            <div class="button" (click)="vote(i)">Vote for this one</div>
+    <div class="voters-count">
+        <i class="fas fa-users"></i> {{votersCount}}
+    </div>
+
+    <div *ngIf="poll.status.state === 'NOT_STARTED'">
+        <div class="vote__waiting">
+            <div>Waiting for the organizer to start...</div>
+            <div class="vote__waiting--spinner"><i class="fas fa-sync fa-spin "></i></div>
+        </div>
+    </div>
+
+    <div *ngIf="currentQuestion && poll.status.state === 'STARTED'">
+        <div class="vote__question">{{currentQuestion.question}}</div>
+        <div class="vote__answers">
+            <div class="vote__answer" [ngClass]="{'selectable': !answered, 'selected': i === selected}" (click)="vote(answer, i)" *ngFor="let answer of currentQuestion.answers; let i = index">
+                <div class="vote__answer__button">
+                    <div *ngIf="answered == false"><i class="far fa-arrow-alt-circle-right"></i></div>
+                    <div *ngIf="answered && i === selected"><i class="far fa-check-circle"></i></div>
+                </div>
+                <div>{{answer.answer}}</div>
+            </div>
+        </div>
+        <div *ngIf="answered" class="vote__waiting">
+            <div>Waiting for the next question...</div>
+            <div class="vote__waiting--spinner"><i class="fas fa-sync fa-spin "></i></div>
         </div>
     </div>
 </div>

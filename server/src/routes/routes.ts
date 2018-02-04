@@ -11,10 +11,10 @@ const success = {
 
 export function initRoutes(app: express.Express){
 
-    app.post('/api/poll', (req, res) => {
+    app.post('/api/poll', async (req, res) => {
 
         try {
-            let poll = createPoll(req.body);
+            let poll = await createPoll(req.body);
             res.json(poll);
         }
         catch(err){
@@ -23,7 +23,7 @@ export function initRoutes(app: express.Express){
         }
     });
 
-    app.get('/api/poll/:token', identifyToken, (req, res) => {
+    app.get('/api/poll/:token', identifyToken, async (req, res) => {
 
         try {
             let tokenInfo = res.locals.tokenInfo;
@@ -31,10 +31,12 @@ export function initRoutes(app: express.Express){
             if (!tokenInfo)
                 res.status(404).send();
 
-            let poll = getPoll(tokenInfo.id);
+            Logger.info('tokenInfo', tokenInfo);
+
+            let poll = await getPoll(tokenInfo.id);
 
             // Do not send results to voters
-            if (tokenInfo.type === 'vote'){
+            if (tokenInfo.type === 'v'){
                 poll.questions.forEach(q => q.answers.forEach(a => a.votes = 0))
                 delete poll.links;
             }
@@ -47,16 +49,16 @@ export function initRoutes(app: express.Express){
         }
     })
 
-    app.post('/api/admin/set', identifyToken, (req, res) => {
+    app.post('/api/admin/set', identifyToken, async (req, res) => {
         try{
             let tokenInfo = res.locals.tokenInfo;
             let token = tokenInfo.token;
-            if (!tokenInfo || tokenInfo.type !== 'admin')
+            if (!tokenInfo || tokenInfo.type !== 'a')
                 res.status(404).send();
 
-            let poll = setPollStep(tokenInfo.id, req.body['step'])
+            let poll = await setPollStep(tokenInfo.id, req.body['step'])
 
-            sendUpdateNotification(tokenInfo.id, token);
+            await sendUpdateNotification(tokenInfo.id, token);
             res.status(200).json(poll);
         }
         catch (err){
@@ -65,16 +67,16 @@ export function initRoutes(app: express.Express){
         }
     })
 
-    app.post('api/admin/reset', identifyToken, (req, res) => {
+    app.post('api/admin/reset', identifyToken, async (req, res) => {
         try{
             let tokenInfo = res.locals.tokenInfo;
             let token = tokenInfo.token;
-            if (!tokenInfo || tokenInfo.type !== 'admin')
+            if (!tokenInfo || tokenInfo.type !== 'a')
                 res.status(404).send();
 
-            let poll = setPollStep(tokenInfo.id, req.body['step'])
+            let poll = await setPollStep(tokenInfo.id, req.body['step'])
 
-            sendUpdateNotification(tokenInfo.id, token);
+            await sendUpdateNotification(tokenInfo.id, token);
             res.status(200).json(poll);
         }
         catch (err){
@@ -83,15 +85,15 @@ export function initRoutes(app: express.Express){
         }
     })
 
-    app.post('/api/vote', identifyToken, (req, res) => {
+    app.post('/api/vote', identifyToken, async (req, res) => {
         try {
             let tokenInfo = res.locals.tokenInfo;
             let token = tokenInfo.token;
-            if (!tokenInfo || tokenInfo.type !== 'vote')
+            if (!tokenInfo || tokenInfo.type !== 'v')
                 res.status(404).send();
 
-            addPollVote(tokenInfo.id, req.body['questionId'], req.body['answers'])
-            sendUpdateNotification(tokenInfo.id, token);
+            await addPollVote(tokenInfo.id, req.body['questionId'], req.body['answers'])
+            await sendUpdateNotification(tokenInfo.id, token);
             res.status(200).json(success);
         }
         catch(err){

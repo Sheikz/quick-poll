@@ -1,7 +1,43 @@
 @import '~app/styles/variables';
 
-.results__bar{
-    height: 40px;
-    background-color: $primary;
-    transition: width 2s;
+.question{
+    margin-left: 5vw;
+}
+
+.answer{
+
+    display: flex;
+    margin-top: 5vh;
+
+    &__answer{
+        width: 30vw;
+        text-align: right;
+    }
+
+    &__bar{
+        height: 40px;
+        background-color: $primary;
+        transition: width 2s;
+
+        &--wrapper{
+            margin-left: 3vw;
+            width: 100%;
+        }
+    }
+
+    &__count{
+        margin-left: 3vw;
+    }
+}
+
+.vote__waiting{
+    margin-top: 10vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    &--spinner{
+        margin-top: 5vh;
+        font-size: 7vw;
+    }
 }

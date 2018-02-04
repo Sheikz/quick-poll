@@ -3,12 +3,10 @@ import { Logger } from '../../logger/logger';
 import { config } from './../../config/config';
 import { PoolConnection, Query, QueryFunction } from 'mysql';
 
-const pool = mysql.createPool(config.db);
-pool.config.connectionLimit = 1000;
+const dbUrl = process.env.CLEARDB_DATABASE_URL || config.db;
 
-pool.on('connection', () => Logger.info('new connection'));
-pool.on('release', () => Logger.info('connection released', {active: pool._allConnections.length, free: pool._freeConnections.length}));
-pool.on('acquire', () => Logger.info('connection acquired', {active: pool._allConnections.length, free: pool._freeConnections.length}));
+const pool = mysql.createPool(dbUrl);
+pool.config.connectionLimit = 1000;
 
 export class Connection {
 
@@ -29,7 +27,7 @@ export class Connection {
         });
     }
 
-    query(query: string, values: any = {}): Promise<any> {
+    query(query: string, values: any = {}): Promise<any[]> {
         return new Promise((resolve, reject) => {
 
             const options = {

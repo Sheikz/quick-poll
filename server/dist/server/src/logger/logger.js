@@ -5,7 +5,7 @@ const fs = require("fs");
 const config_1 = require("../config/config");
 const tsFormat = () => (new Date()).toLocaleString();
 const today = () => (new Date()).getDate();
-const logDir = config_1.config.logging.dir;
+const logDir = process.env.loggingDir || config_1.config.logging.dir;
 try {
     if (!fs.existsSync(logDir)) {
         fs.mkdirSync(logDir);
@@ -29,5 +29,5 @@ exports.Logger = new (winston.Logger)({
         })
     ]
 });
-exports.Logger.level = config_1.config.logging.level;
+exports.Logger.level = process.env.loggingLevel || config_1.config.logging.level;
 exports.Logger.info('Winston logger initialized!');

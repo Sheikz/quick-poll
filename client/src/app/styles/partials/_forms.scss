@@ -6,4 +6,7 @@ input{
     outline: none;
     color: $primary;
     @include font-medium;
+    width: 90%;
+    margin-top: 10px;
+    padding-bottom: 5px;
 }

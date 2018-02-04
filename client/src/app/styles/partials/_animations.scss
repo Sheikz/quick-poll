@@ -1,0 +1,16 @@
+.fade-in{
+    animation-name: fade-in;
+    animation-duration: 0.5s;
+}
+
+/* The animation code */
+@keyframes fade-in {
+    from {opacity: 0}
+    to {opacity: 1}
+}
+
+/* The animation code */
+@keyframes fade-out {
+    from {opacity: 1}
+    to {opacity: 0}
+}

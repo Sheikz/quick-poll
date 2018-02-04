@@ -1,11 +1,19 @@
-<div>Admin page</div>
-
 <div *ngIf="poll">
 
-    <div *ngIf="poll.status.state !== 'STARTED'" class="button" (click)="start()"><i class="fas fa-play"></i>Start</div>
-    <div *ngIf="poll.status.state === 'STARTED'" class="button" (click)="start()"><i class="fas fa-play"></i>Restart</div>
-    <div *ngIf="poll.status.state === 'STARTED'" class="button" (click)="next()"><i class="fas fa-play"></i>Next</div>
-    <div>Current question: {{question.question}}</div>
-    <div>Progress {{currentStep}}/{{poll.questions.length}}</div>
+    <div class="voters-count">
+        <i class="fas fa-users"></i> {{votersCount}}
+    </div>
+
+    <div class="poll-status">
+        <div class="poll-status__state"></div>
+        <div *ngIf="poll.status.state !== 'STARTED'">The poll is not started</div>
+        <div *ngIf="poll.status.state === 'STARTED'">Current question: {{currentQuestion.question}}</div>
+        <div *ngIf="poll.status.state === 'STARTED'">Progress {{currentStep+1}}/{{poll.questions.length}}</div>
+    </div>
+
+    <div *ngIf="poll.status.state !== 'STARTED'" class="button" (click)="start()"><i class="fas fa-play"></i> Start</div>
+    <div *ngIf="poll.status.state === 'STARTED'" class="button" (click)="start()"><i class="fas fa-play"></i> Restart</div>
+    <div *ngIf="hasNext()" class="button" (click)="next()"><i class="fas fa-step-forward"></i> Next</div>
+    <div *ngIf="hasPrevious()" class="button" (click)="previous()"><i class="fas fa-step-forward" data-fa-transform="rotate-180"></i> Previous</div>
 
 </div>

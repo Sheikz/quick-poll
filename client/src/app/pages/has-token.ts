@@ -3,19 +3,25 @@ import { ActivatedRoute } from '@angular/router';
 import { IPoll, IQuestion } from '../../../../shared/models/poll';
 import { PubNubAngular } from 'pubnub-angular2';
 import { PollService } from '../services/poll.service';
+import { OnDestroy } from '@angular/core/src/metadata/lifecycle_hooks';
 
-export abstract class HasPoll implements OnInit {
+interface IChannel {
+    name: string;
+    presence: boolean;
+}
 
-    protected poll: IPoll;
-    protected token: string;
+export abstract class HasPoll implements OnInit, OnDestroy {
 
+    poll: IPoll;
+    token: string;
     currentStep: number;
-    question: IQuestion;
+    currentQuestion: IQuestion;
+    votersCount = 0;
 
     constructor(
-        private router: ActivatedRoute,
+        protected router: ActivatedRoute,
         protected pollService: PollService,
-        private pubnub: PubNubAngular,
+        protected pubnub: PubNubAngular,
         ) {}
 
     ngOnInit() {
@@ -25,40 +31,59 @@ export abstract class HasPoll implements OnInit {
         });
     }
 
+    ngOnDestroy() {
+        this.pubnub.unsubscribeAll();
+    }
+
     protected init(token: string) {
         this.pollService.getPoll(token).subscribe(poll => {
-            this.poll = poll;
-            this.setPubNub();
+            this.update(poll);
+            this.initPubnub();
         });
-    }
+    } 
 
-    onUpdate() {}
-
-    update() {
-        this.currentStep = this.poll.status.step;
-        this.question = this.poll.questions[this.currentStep];
-        this.onUpdate();
-    }
-
-    protected setPubNub() {
+    protected initPubnub() {
         this.pubnub.addListener({
             presence: (presenceEvent) => {
-                console.log('presence event', presenceEvent);
+                this.onPresence(presenceEvent);
+                this.votersCount = Math.max(presenceEvent.occupancy - 2, 0);
             },
             message: (event) => {
-                console.log('got message', event);
-                this.poll = event.message.poll;
-                console.log('updated poll', this.poll);
-                this.update();
+                if (this.shouldUpdate(event)) {
+                    if (event.message.poll) {
+                        this.update(event.message.poll);
+                    }
+                }
+                this.onMessage(event);
             }
         });
-
-        this.pubnub.subscribe({
-            channels: [this.poll.id],
-            withPresence: true
+        console.log('channels', this.getChannels());
+        this.getChannels().forEach(channel => {
+            this.pubnub.subscribe({
+                channels: [channel.name],
+                withPresence: channel.presence
+            });
+            console.log('subscribed to channel', channel.name);
         });
-        this.update();
-        console.log('subscribed to channel', this.poll.id);
+    }
+
+    private update(poll) {
+        let changeQuestion = false;
+        this.poll = poll;
+        if (this.poll.status.step !== this.currentStep) {
+            changeQuestion = true;
+        }
+        this.currentStep = this.poll.status.step;
+        this.currentQuestion = this.poll.questions[this.currentStep];
+        this.onUpdate(changeQuestion);
+    }
+
+    protected onUpdate(changeQuestion: boolean) {}
+    protected onPresence(event) {}
+    protected onMessage(message) {}
+    abstract getChannels(): IChannel[];
+    protected shouldUpdate(event): boolean {
+        return true;
     }
 
 }

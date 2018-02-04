@@ -14,6 +14,7 @@ import * as _ from 'lodash';
 export class ResultsPageComponent extends HasPoll {
 
     totalVotes: number;
+    maxVotes: number;
 
     constructor(
         router: ActivatedRoute,
@@ -22,20 +23,40 @@ export class ResultsPageComponent extends HasPoll {
         super(router, pollService, pubnub);
     }
 
-    protected init(token) {
-        this.pollService.getPoll(token).subscribe(poll => {
-            this.poll = poll;
-            this.setPubNub();
-            this.update();
+    onUpdate() {
+        console.log('onUpdate', this.poll);
+        this.totalVotes = _.reduce(this.currentQuestion.answers, (r, d) => r + d.votes, 0);
+        this.maxVotes = _.reduce(this.currentQuestion.answers, (r, d) => Math.max(r, d.votes), 0);
+        this.currentQuestion.answers.forEach(answer => {
+            if (answer.votes === 0 || this.maxVotes === 0) {
+                answer['width'] = '0%';
+            } else {
+                answer['width'] = (answer.votes) / this.maxVotes * 100;
+                answer['width'] += '%';
+            }
+
         });
     }
 
-    onUpdate() {
-        this.totalVotes = _.reduce(this.question.answers, (r, d) => r + d.votes, 0);
-        this.question.answers.forEach(answer => {
-            answer['width'] = (answer.votes) / this.totalVotes * 100;
-            answer['width'] += '%';
-        });
+    shouldUpdate(event) {
+        return !!event.channel.match(/.*a$/);
     }
+
+    onPresence(event) {
+        console.log('presence event', event);
+    }
+
+    getChannels() {
+        return [{
+            name: this.poll.id + 'a',
+            presence: false
+        },
+        {
+            name: this.poll.id + 'v',
+            presence: true
+        }];
+    }
+
+
 
 }

@@ -25,5 +25,6 @@ export interface IQuestion{
 
 export interface IAnswer{
     answer: string,
-    votes: number
+    votes: number,
+    selected?: boolean
 }
