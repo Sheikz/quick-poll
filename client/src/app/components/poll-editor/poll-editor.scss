@@ -1,0 +1,9 @@
+@import '~app/styles/variables';
+
+.question:not(:first-child){
+    margin-top: $gutter/2;
+}
+
+.question__buttons{
+    margin-top: $gutter/2;
+}

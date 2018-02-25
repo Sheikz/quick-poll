@@ -1,0 +1,11 @@
+<div *ngIf="poll">
+    <div class="question" *ngFor="let question of poll.questions; let i = index">
+        <app-question-editor [(ngModel)]="poll.questions[i]" [canDeleteQuestion]="canDelete()" (delete)="canDelete && delete(question)"></app-question-editor>
+    </div>
+    <div class="question__buttons">
+        <div class="button" [ngClass]="{'disabled': !canAddQuestion()}" (click)="canAddQuestion() && addQuestion()"><i class="fas fa-plus"></i> Add question</div>
+        <div class="button" [ngClass]="{'disabled': !canCreatePoll()}" (click)="canCreatePoll() && save()">Create poll</div>
+    </div>
+
+    <app-poll-links [links]="poll.links"></app-poll-links>
+</div>
