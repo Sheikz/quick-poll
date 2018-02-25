@@ -4,9 +4,11 @@ import { FormsModule } from '@angular/forms';
 
 import { PollService } from './poll.service';
 import { HttpClientModule } from '@angular/common/http';
+import { PubnubService } from './pubnub.service';
 
 const services = [
-  PollService
+  PollService,
+  PubnubService
 ];
 
 @NgModule({

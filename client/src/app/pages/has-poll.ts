@@ -4,6 +4,12 @@ import { IPoll, IQuestion } from '../../../../shared/models/poll';
 import { PubNubAngular } from 'pubnub-angular2';
 import { PollService } from '../services/poll.service';
 import { OnDestroy } from '@angular/core/src/metadata/lifecycle_hooks';
+import { Observable } from 'rxjs/Observable';
+import { Observer } from 'rxjs/Observer';
+
+import 'rxjs/add/observable/of';
+import { PubnubService, IPresenceEvent } from '../services/pubnub.service';
+import { ISubscription } from 'rxjs/Subscription';
 
 interface IChannel {
     name: string;
@@ -18,13 +24,29 @@ export abstract class HasPoll implements OnInit, OnDestroy {
     currentQuestion: IQuestion;
     votersCount = 0;
 
+    pollObserver: Observer<IPoll>;
+    presenceObserver: Observer<IPresenceEvent>;
+    subscriptions: ISubscription[] = [];
+
+    poll$: Observable<IPoll> = Observable.create((observer: Observer<IPoll>) => {
+        this.pollObserver = observer;
+    });
+    presence$: Observable<IPresenceEvent> = Observable.create((observer: Observer<IPresenceEvent>) => this.presenceObserver = observer);
+
     constructor(
         protected router: ActivatedRoute,
         protected pollService: PollService,
-        protected pubnub: PubNubAngular,
+        protected pubnub: PubnubService,
         ) {}
 
     ngOnInit() {
+        this.subscriptions.push(this.poll$.subscribe(poll => {
+            this.poll = poll;
+            this.update(poll);
+        }));
+        this.subscriptions.push(this.presence$.subscribe(presence => {
+            this.votersCount = Math.max(presence.occupancy - 2, 0);
+        }));
         this.router.paramMap.subscribe(params => {
             this.token = params.get('token');
             this.init(this.token);
@@ -32,38 +54,14 @@ export abstract class HasPoll implements OnInit, OnDestroy {
     }
 
     ngOnDestroy() {
-        this.pubnub.unsubscribeAll();
+        this.subscriptions.forEach(s => s.unsubscribe());
+        this.pubnub.unsubscribe(this.poll && this.poll.id);
     }
 
     protected init(token: string) {
         this.pollService.getPoll(token).subscribe(poll => {
-            this.update(poll);
-            this.initPubnub();
-        });
-    } 
-
-    protected initPubnub() {
-        this.pubnub.addListener({
-            presence: (presenceEvent) => {
-                this.onPresence(presenceEvent);
-                this.votersCount = Math.max(presenceEvent.occupancy - 2, 0);
-            },
-            message: (event) => {
-                if (this.shouldUpdate(event)) {
-                    if (event.message.poll) {
-                        this.update(event.message.poll);
-                    }
-                }
-                this.onMessage(event);
-            }
-        });
-        console.log('channels', this.getChannels());
-        this.getChannels().forEach(channel => {
-            this.pubnub.subscribe({
-                channels: [channel.name],
-                withPresence: channel.presence
-            });
-            console.log('subscribed to channel', channel.name);
+            this.pubnub.subscribe(poll.id, this.pollObserver, this.presenceObserver);
+            this.pollObserver.next(poll);
         });
     }
 
@@ -81,9 +79,4 @@ export abstract class HasPoll implements OnInit, OnDestroy {
     protected onUpdate(changeQuestion: boolean) {}
     protected onPresence(event) {}
     protected onMessage(message) {}
-    abstract getChannels(): IChannel[];
-    protected shouldUpdate(event): boolean {
-        return true;
-    }
-
 }
