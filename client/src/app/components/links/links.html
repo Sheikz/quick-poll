@@ -1,0 +1,21 @@
+<div *ngIf="links" class="links">
+    <div>Your links</div>
+    <div>
+        <a class="button" target="_blank" routerLink="{{getRouterLink('vote')}}">Vote</a>
+        <span class="link">{{links.vote}}</span>
+        <span (click)="copy(links.vote)"><i class="far fa-clipboard"></i></span>
+        <span class="fade-in" *ngIf="copied === links.vote">Copied!</span>
+    </div>
+    <div>
+        <a class="button" target="_blank" routerLink="{{getRouterLink('admin')}}">Admin</a>
+        <span class="link">{{links.admin}}</span>
+        <span (click)="copy(links.admin)"><i class="far fa-clipboard"></i></span>
+        <span class="fade-in" *ngIf="copied === links.admin">Copied!</span>
+    </div>
+    <div>
+        <a class="button" target="_blank" routerLink="{{getRouterLink('results')}}">Results</a>
+        <span class="link">{{links.results}}</span>
+        <span (click)="copy(links.results)"><i class="far fa-clipboard"></i></span>
+        <span class="fade-in" *ngIf="copied === links.results">Copied!</span>
+    </div>
+</div>

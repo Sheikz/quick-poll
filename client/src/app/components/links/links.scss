@@ -1,0 +1,28 @@
+@import '~app/styles/variables';
+
+.links{
+    margin-top: $gutter*2;
+
+    .fa-clipboard{
+        margin-left: 5px;
+        cursor: pointer;
+        
+        &:hover{
+            color: $third;
+        }
+    }
+
+    & > * > *{
+        display: inline-block;;
+    }
+}
+
+
+.link{
+    border: 1px solid $primary;
+    padding: 5px 10px;
+
+    .button{
+        min-width: 100px;
+    }
+}
