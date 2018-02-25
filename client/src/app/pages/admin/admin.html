@@ -15,5 +15,14 @@
     <div *ngIf="poll.status.state === 'STARTED'" class="button" (click)="start()"><i class="fas fa-play"></i> Restart</div>
     <div *ngIf="hasNext()" class="button" (click)="next()"><i class="fas fa-step-forward"></i> Next</div>
     <div *ngIf="hasPrevious()" class="button" (click)="previous()"><i class="fas fa-step-forward" data-fa-transform="rotate-180"></i> Previous</div>
+    
+    <div class="quick-question">
+        <div>Add a live question</div>
+        <app-question-editor [(ngModel)]="question"></app-question-editor>
+        <div class="question__buttons">
+            <div class="button" [ngClass]="{'disabled': !canPostQuestion()}" (click)="canPostQuestion() && postQuestion()"><i class="fas fa-plus"></i> Post question</div>
+        </div>
+    </div>
 
+    <app-poll-links [links]="poll.links"></app-poll-links>
 </div>

@@ -1,8 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { HasPoll } from '../has-token';
+import { HasPoll } from '../has-poll';
 import { PollService } from '../../services/poll.service';
 import { PubNubAngular } from 'pubnub-angular2';
+import { IPoll } from '../../../../../shared/models/poll';
+import { PubnubService } from '../../services/pubnub.service';
+import * as _ from 'lodash';
+import { defaultQuestion } from '../../components/poll-editor/poll-editor.component';
 
 @Component({
     selector: 'app-admin',
@@ -11,16 +15,19 @@ import { PubNubAngular } from 'pubnub-angular2';
 })
 export class AdminPageComponent extends HasPoll {
 
+    question = _.cloneDeep(defaultQuestion);
+
     constructor(
         router: ActivatedRoute,
         protected pollService: PollService,
-        pubnub: PubNubAngular) {
+        protected pubnub: PubnubService) {
         super(router, pollService, pubnub);
     }
 
     start() {
-        this.pollService.start(this.token).subscribe(r => {
+        this.pollService.start(this.token).subscribe((r: IPoll) => {
             console.log('started', r);
+            this.pollObserver.next(r);
         });
     }
 
@@ -44,19 +51,15 @@ export class AdminPageComponent extends HasPoll {
         return this.currentStep > 0;
     }
 
-    shouldUpdate(event) {
-        return !!event.channel.match(/.*a$/);
+    postQuestion() {
+        return this.pollService.insertQuestion(this.token, this.question)
+        .subscribe(r => this.next());
     }
 
-    getChannels() {
-        return [{
-            name: this.poll.id + 'a',
-            presence: false
-        },
-        {
-            name: this.poll.id + 'v',
-            presence: true
-        }];
+    canPostQuestion() {
+        return this.question.question !== '' &&
+        this.question.answers.length >= 2 &&
+        _.every(this.question.answers, a => a.answer !== '');
     }
 
 }

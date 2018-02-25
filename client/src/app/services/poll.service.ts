@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { IPoll } from '../../../../shared/models/poll';
+import { IPoll, IQuestion } from '../../../../shared/models/poll';
 
 @Injectable()
 export class PollService {
@@ -30,6 +30,13 @@ export class PollService {
             token: token,
             questionId: questionId,
             answers: answers
+        });
+    }
+
+    insertQuestion(token, question: IQuestion) {
+        return this.http.post('api/admin/insert', {
+            token: token,
+            question: question
         });
     }
 }
