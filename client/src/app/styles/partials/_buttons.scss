@@ -10,9 +10,14 @@
     border-radius: 3px;
     user-select: none;
 
-    &:hover{
+    &:hover:not(.disabled){
         background-color: $secondary;
         color: $primary;
         border-color: $primary;
+    }
+
+    &.disabled{
+        opacity: 0.5;
+        cursor: not-allowed;
     }
 }

@@ -12,7 +12,7 @@
     </div>
 
     <div *ngIf="currentQuestion && poll.status.state === 'STARTED'">
-        <div class="vote__question">{{currentQuestion.question}}</div>
+        <div class="vote__question"><i class="far fa-question-circle"></i> {{currentQuestion.question}}</div>
         <div class="vote__answers">
             <div class="vote__answer" [ngClass]="{'selectable': !answered, 'selected': i === selected}" (click)="vote(answer, i)" *ngFor="let answer of currentQuestion.answers; let i = index">
                 <div class="vote__answer__button">
