@@ -11,7 +11,7 @@ const pub = new pubnub({
     secretKey: process.env.secretKey || config.pubnub.secretKey
 })
 
-export function publish(message, channel){
+function publish(message, channel){
 
     return pub.publish({
         message: message,
@@ -25,21 +25,11 @@ export function publish(message, channel){
 
 export async function sendUpdateNotification(id, token){
     let poll = await getPoll(id);
+    console.log('sending update');
 
-    Logger.info('sending poll update to admins', poll);
+    Logger.info('sending poll update', poll);
     publish({
         event: 'POLL_UPDATED',
         poll: poll
-    }, poll.id + 'a');
-
-    poll.questions.forEach(q => {
-        q.answers.forEach(a => a.votes = 0);
-    })
-
-    Logger.info('sending poll update to voters', poll);
-    return publish({
-        event: 'POLL_UPDATED',
-        poll: poll
-    }, poll.id + 'v');
-
+    }, poll.id);
 }

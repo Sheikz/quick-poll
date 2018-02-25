@@ -5,7 +5,7 @@ import * as path from 'path';
 import { Logger } from './logger/logger';
 import { initRoutes } from './routes/routes';
 
-const PORT = process.env.PORT || 4200
+const PORT = process.env.PORT || 3000
 
 const server = express();
 

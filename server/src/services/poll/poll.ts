@@ -1,10 +1,10 @@
-import { IPoll, IPollStatus } from '../../../../shared/models/poll';
+import { IPoll, IPollStatus, IQuestion } from '../../../../shared/models/poll';
 import { Connection } from '../database/connector';
 import { Logger } from '../../logger/logger';
 import * as crypto from 'crypto';
 import { generateLinks, generateId } from '../auth/auth';
-import { publish } from '../notifications/notifications';
 import * as NodeCache from 'node-cache';
+import { sendUpdateNotification } from '../notifications/notifications';
 
 const livePolls: {
     [key: number]: IPoll
@@ -30,6 +30,7 @@ export async function createPoll(poll: IPoll){
 
 function savePoll(poll: IPoll){
     cache.set(poll.id, poll);
+    sendUpdateNotification(poll.id, poll);
     return poll;
 }
 
@@ -78,6 +79,18 @@ export async function endPoll(id){
     let poll = await getPoll(id);
     poll.status.step = 0;
     poll.status.state = 'FINISHED';
+    return savePoll(poll);
+}
+
+/**
+ * Insert a new question after the current step
+ * @param id 
+ * @param question 
+ */
+export async function insertQuestion(id, question: IQuestion){
+    let poll = await getPoll(id);
+    poll.questions.splice(poll.status.step+1, 0, question);
+    Logger.info('updated poll', poll);
     return savePoll(poll);
 }
 

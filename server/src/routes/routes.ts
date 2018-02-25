@@ -1,9 +1,8 @@
 import * as express from 'express';
 import { Logger } from '../logger/logger';
-import { getPoll, setPollStep, addPollVote, createPoll } from '../services/poll/poll';
+import { getPoll, setPollStep, addPollVote, createPoll, insertQuestion } from '../services/poll/poll';
 import { generateLinks, decrypt, getTokenInfo } from '../services/auth/auth';
 import * as _ from 'lodash';
-import { publish, sendUpdateNotification } from '../services/notifications/notifications';
 
 const success = {
     message: 'OK'
@@ -58,7 +57,6 @@ export function initRoutes(app: express.Express){
 
             let poll = await setPollStep(tokenInfo.id, req.body['step'])
 
-            await sendUpdateNotification(tokenInfo.id, token);
             res.status(200).json(poll);
         }
         catch (err){
@@ -67,7 +65,7 @@ export function initRoutes(app: express.Express){
         }
     })
 
-    app.post('api/admin/reset', identifyToken, async (req, res) => {
+    app.post('/api/admin/reset', identifyToken, async (req, res) => {
         try{
             let tokenInfo = res.locals.tokenInfo;
             let token = tokenInfo.token;
@@ -76,11 +74,26 @@ export function initRoutes(app: express.Express){
 
             let poll = await setPollStep(tokenInfo.id, req.body['step'])
 
-            await sendUpdateNotification(tokenInfo.id, token);
             res.status(200).json(poll);
         }
         catch (err){
             Logger.error('error while setting poll step', err);
+            res.status(500).json(err);
+        }
+    })
+
+    app.post('/api/admin/insert', identifyToken, async(req, res) => {
+        try{
+            console.log('here');
+            let tokenInfo = res.locals.tokenInfo;
+            let token = tokenInfo.token;
+            if (!tokenInfo || tokenInfo.type !== 'a')
+                res.status(404).send();
+
+            let poll = await insertQuestion(tokenInfo.id, req.body['question']);
+            res.status(200).json(poll);
+        } catch(err) {
+            Logger.error('Error while inserting question', err);
             res.status(500).json(err);
         }
     })
@@ -93,7 +106,6 @@ export function initRoutes(app: express.Express){
                 res.status(404).send();
 
             await addPollVote(tokenInfo.id, req.body['questionId'], req.body['answers'])
-            await sendUpdateNotification(tokenInfo.id, token);
             res.status(200).json(success);
         }
         catch(err){
