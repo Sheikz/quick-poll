@@ -1,0 +1,18 @@
+<div *ngIf="question" class="question">
+    <div class="question__header">
+        <div>Your question</div>
+        <span *ngIf="canDeleteQuestion" (click)="delete.emit()"><i class="fas fa-times"></i></span>
+    </div>
+    <input type="text" [(ngModel)]="question.question">
+    <div class="answers">
+        <div>Answers</div>
+        <div class="answer" *ngFor="let answer of question.answers; let i = index">
+            <input type="text" [(ngModel)]="answer.answer" (keydown)="onKeyDown($event, question)">
+            <span *ngIf="canDelete(question)" (click)="deleteAnswer(answer)"><i class="fas fa-times"></i></span>
+        </div>
+    </div>
+    <div class="question__add-answer">
+        <span class="button" [ngClass]="{'disabled': !canAddAnswer()}" (click)="canAddAnswer() && addAnswer(question)"><i class="fas fa-plus"></i> Add answer</span>
+        <!-- <app-checkbox [(ngModel)]="question.multiple">Multiple choice</app-checkbox> -->
+    </div>
+</div>
